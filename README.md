@@ -28,3 +28,66 @@ Student-database-management/
 │   ├── tailwind.config.js    # Tailwind CSS configuration mapping source paths
 │   └── postcss.config.js     # PostCSS processor configuration
 └── README.md                 # Project documentation
+
+
+**SQL Database Configuration (AWS RDS)
+The platform connects the Python/Flask backend to an enterprise-grade Amazon Web Services Relational Database Service (AWS RDS) MySQL instance using the PyMySQL driver over TCP port 3306.
+
+Security & Isolation
+To prevent security leaks, sensitive database parameters are loaded dynamically from server environment variables rather than hardcoded in the repository:
+
+DB_HOST: AWS RDS Endpoint URL
+
+DB_PORT: 3306
+
+DB_USER: Database Master Username
+
+DB_PASSWORD: Database Master Password
+
+DB_NAME: student_db
+
+Database Schema (DDL)
+SQL
+CREATE DATABASE IF NOT EXISTS student_db;
+USE student_db;
+
+CREATE TABLE IF NOT EXISTS students (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(100) NOT NULL,
+    email VARCHAR(100) NOT NULL UNIQUE,
+    department VARCHAR(50) NOT NULL,
+    gpa DECIMAL(3, 2) NOT NULL DEFAULT 0.00,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+CREATE INDEX idx_department ON students(department);
+CREATE INDEX idx_name ON students(name);
+☁️ Cloud Deployment Setup (Render)
+The application uses a monorepo continuous integration and deployment pipeline on Render:
+
+Backend Web Service (/backend):
+
+Root Directory: backend
+
+Environment: Python 3.11
+
+Build Command: pip install -r requirements.txt
+
+Start Command: gunicorn app:app
+
+Environment Variables: Injected securely via the Render Environment Dashboard.
+
+Frontend Static Site (/frontend):
+
+Root Directory: frontend
+
+Build Command: npm install && npm run build
+
+Publish Directory: build
+
+Render compiles static React and Tailwind CSS bundles served globally via CDN.
+
+🚀 Live Application Links
+Frontend Website: https://student-frontend.onrender.com (Replace with your live frontend URL)
+
+Backend API Endpoint: https://student-database-7xik.onrender.com/api/students (Replace with your live backend API URL)**
